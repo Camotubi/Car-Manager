@@ -1,6 +1,8 @@
 #include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
 using namespace std;
 class	Carro
 {
@@ -26,6 +28,10 @@ public:
 	{
 		return fuel_economy.back();
 	}
+	float calculate_fuel_economy(float fuel_final, float fuel_inicial,float distance)
+	{
+		return (fuel_final-fuel_inicial)/distance;
+	}
 
 };
 
@@ -34,10 +40,10 @@ int main () {
 	string carro_nombre;
 	int carro_ano;
 	char menu_op;
-	
+	void menu();
 	while(true)
 	{
-		cout<<"a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria"<<endl;
+		menu();
 		cin>>menu_op;
 		switch(menu_op)
 		{
@@ -49,18 +55,41 @@ int main () {
 				carros.push_back(Carro(carro_nombre,carro_ano));
 			break;
 			
-			case 'b':cout<<endl;
+			case 'b':
+				for(int i =0; i<carros.size();i++)
+				{
+					cout<<carros.at(i).getnombre()<<endl;
+				}
 			break;
 			
 			case 'c':
-				ofstream datos;
-					datos.open("data.txt",ios::app);
+				{
+					ofstream datos;
+					datos.open("data.txt");
 					for(int unsigned n=0; n<carros.size(); n++)
 					{
 						datos<<carros.at(n).getnombre()<<endl;
-						cout<<"Hola"<<carros.at(n).getnombre();
 					}
 					datos.close();
+				}
+				
+			break;
+			
+			case 'd':
+			{
+				ifstream datos;
+				datos.open("data.txt");
+				while(getline(datos,carro_nombre))
+				{
+					carros.push_back(Carro(carro_nombre,1));
+				}
+				datos.close();
+			}
+			
+			break;
+			
+			case 'f':
+				system("clear");
 			break;
 		}
 		
@@ -68,4 +97,9 @@ int main () {
 	
 	
   return 0;
+}
+
+
+void menu(){
+			cout<<"a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla"<<endl;
 }
