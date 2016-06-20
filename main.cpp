@@ -73,9 +73,35 @@ int main () {
                     cin>>yes_no;
                     if(yes_no == 's')
                     {
-                        cout<<"Nombre del Archivo:";
-                        cin>>nom_archivo;
-                        saveCars(carros,nom_archivo);
+                        int loop = 1;
+                        do
+                        {
+                            if(loop==1)
+                            {
+                            loop++;
+                            cout<<"Nombre del Archivo:";
+                            cin>>nom_archivo;
+                            }
+                            else
+                            {
+                                cout<<"El archivo "<<nom_archivo<<" ya existe, ¿Desea sobrescribirlo?(s/n/c)"<<endl;
+                                cin>>yes_no;
+                                switch(yes_no)
+                                {
+                                    case 's':
+                                        saveCars(carros,nom_archivo);
+                                        break;
+                                    case 'n':
+                                        cout<<"Nombre del Archivo:";
+                                        cin>>nom_archivo;
+                                        break;
+                                    case 'c':
+                                        loop = 0;
+                                        break;
+                                }
+                            }
+
+                        }while(filexist(nom_archivo) && loop!=0);
                     }
                         
                 }
