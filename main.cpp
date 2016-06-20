@@ -5,11 +5,12 @@
 #include <cstdlib>
 #include "Car.h"
 #include <string>
+#include <sstream>
 #define MENU "a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla\ng) Cerrar Programa"
 
 using namespace std;
 int main () {
-	vector<Car> carros;
+	vector<Car> carros; 
 	string carro_nombre;
     fstream myfiles;
 	int carro_ano;
@@ -17,6 +18,7 @@ int main () {
 	char menu_op;
     char yes_no;
     int saveCars(vector<Car>,string);
+    void loadCars(vector <Car>*, string);
 	void printMenu();
     string nom_archivo;
 	while(true)
@@ -36,7 +38,7 @@ int main () {
 			case 'b':
 				for(int unsigned i =0; i<carros.size();i++)
 				{
-					cout<<carros.at(i).get_nombre()<<endl;
+					cout<<carros.at(i).get_nombre()<<carros.at(i).get_ano()<<carros.at(i).get_id()<<endl;
 				}
 			break;
 			
@@ -68,12 +70,7 @@ int main () {
             }
                 cout<<"Ingrese el nombre del archivo"<<endl;
                 cin>>nom_archivo;
-				myfiles.open(nom_archivo.c_str(),fstream::in);
-				while(getline(myfiles,carro_nombre))
-				{
-					carros.push_back(Car(carro_nombre,1,1));
-				}
-				myfiles.close();
+                loadCars(&carros,nom_archivo);
 			break;
 			
 			case 'f':
@@ -99,11 +96,9 @@ int saveCars(vector<Car> cars, string filename)
     myfiles.open(filename.c_str(), fstream::out);
     for(int unsigned n=0; n<cars.size(); n++)
     {
-        myfiles<<cars.at(n).get_id();
-        myfiles<<"{";
-        myfiles<<"Nombre:"<<cars.at(n).get_nombre()<<";";
-        myfiles<<"Año:"<<cars.at(n).get_ano()<<";";
-        myfiles<<"ID:"<<cars.at(n).get_id()<<";";
+        myfiles<<"ID:"<<cars.at(n).get_id()<<endl;
+        myfiles<<"Nombre:"<<cars.at(n).get_nombre()<<endl;
+        myfiles<<"Año:"<<cars.at(n).get_ano()<<endl;
         if(cars.at(n).get_fuel_economy_size()!=0)
         {
             myfiles<<"Fuel Economy:";
@@ -113,8 +108,48 @@ int saveCars(vector<Car> cars, string filename)
             }
             myfiles<<cars.at(n).getcurrent_fuel_economy()<<";";
         }
-        myfiles<<"}";
+        myfiles<<"--#SPACE#--\n";
     }
     myfiles.close();
     return 0;
+}
+
+void loadCars(vector<Car> *cars, string filename)
+{
+    int current_car_id = 0;
+    int current_car_year = 0;
+    stringstream parseHolder;
+    string current_line;
+    fstream myfiles;
+    string current_car_name;
+    myfiles.open(filename.c_str(),fstream::in);
+    while(getline(myfiles,current_line))
+    {
+        cout<<current_line<<endl;
+        if(current_line.substr(0,3) == "ID:")
+        {
+            current_car_id=atoi(current_line.substr(3).c_str());
+            cout<<current_car_id<<endl;
+        }
+        if(current_line.substr(0,7) == "Nombre:")
+        {
+            current_car_name=current_line.substr(7);
+            cout<<current_car_name<<endl;
+        }
+        if(current_line.substr(0,4) == "Ano:")
+        {
+            parseHolder.str(string());
+            current_car_year= atoi(current_line.substr(4).c_str());
+            cout<<current_car_year<<endl;
+        }
+        if(current_line=="--#SPACE#--")
+        {
+            cout<<"hola"<<endl;
+            cars->push_back(Car(current_car_name,current_car_year,current_car_id));
+            current_car_id = 0;
+            current_car_year = 0;
+        }
+
+    }
+    myfiles.close();
 }
