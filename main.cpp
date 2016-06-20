@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include "Car.h"
 #include <string>
-#include <sstream>
 #define MENU "a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla\ng) Cerrar Programa"
 
 using namespace std;
@@ -19,6 +18,7 @@ int main () {
     char yes_no;
     int saveCars(vector<Car>,string);
     void loadCars(vector <Car>*, string);
+    bool filexist(string);
 	void printMenu();
     string nom_archivo;
 	while(true)
@@ -46,7 +46,19 @@ int main () {
 				{
                     cout<<"Ingrese el nombre del archivo"<<endl;
                     cin>>nom_archivo;
-                    saveCars(carros,nom_archivo);
+                    if(!filexist(nom_archivo))
+                    {
+                        saveCars(carros,nom_archivo);
+                    }
+                    else
+                    {
+                        cout<<"El Archivo "<<nom_archivo<<" ya existe, ¿Desea sobrescribirlo?(s/n)";
+                        cin>>yes_no;
+                        if(yes_no == 's')
+                        {
+                            saveCars(carros,nom_archivo);
+                        }
+                    }
 				}
 				
 			break;
@@ -68,9 +80,10 @@ int main () {
                         
                 }
             }
-                cout<<"Ingrese el nombre del archivo"<<endl;
-                cin>>nom_archivo;
-                loadCars(&carros,nom_archivo);
+            carros.clear();
+            cout<<"Ingrese el nombre del archivo"<<endl;
+            cin>>nom_archivo;
+            loadCars(&carros,nom_archivo);
 			break;
 			
 			case 'f':
@@ -118,7 +131,6 @@ void loadCars(vector<Car> *cars, string filename)
 {
     int current_car_id = 0;
     int current_car_year = 0;
-    stringstream parseHolder;
     string current_line;
     fstream myfiles;
     string current_car_name;
@@ -138,7 +150,6 @@ void loadCars(vector<Car> *cars, string filename)
         }
         if(current_line.substr(0,4) == "Ano:")
         {
-            parseHolder.str(string());
             current_car_year= atoi(current_line.substr(4).c_str());
             cout<<current_car_year<<endl;
         }
@@ -153,3 +164,10 @@ void loadCars(vector<Car> *cars, string filename)
     }
     myfiles.close();
 }
+
+bool filexist(string filename)
+{
+    ifstream file(filename.c_str());
+    
+    return (bool)file;
+}    
