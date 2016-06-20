@@ -16,7 +16,7 @@ int main () {
     int carro_id;
 	char menu_op;
     char yes_no;
-    
+    int saveCars(vector<Car>,string);
 	void printMenu();
     string nom_archivo;
 	while(true)
@@ -42,14 +42,9 @@ int main () {
 			
 			case 'c':
 				{
-                cout<<"Ingrese el nombre del archivo"<<endl;
-                cin>>nom_archivo;
-					myfiles.open(nom_archivo.c_str(),fstream::out);
-					for(int unsigned n=0; n<carros.size(); n++)
-					{
-						myfiles<<carros.at(n).get_nombre()<<endl;
-					}
-					myfiles.close();
+                    cout<<"Ingrese el nombre del archivo"<<endl;
+                    cin>>nom_archivo;
+                    saveCars(carros,nom_archivo);
 				}
 				
 			break;
@@ -66,27 +61,7 @@ int main () {
                     {
                         cout<<"Nombre del Archivo:";
                         cin>>nom_archivo;
-                        myfiles.open(nom_archivo.c_str(), fstream::out);
-                        for(int unsigned n=0; n<carros.size(); n++)
-                        {
-                            myfiles<<carros.at(n).get_id();
-                            myfiles<<"{";
-                            myfiles<<carros.at(n).get_nombre()<<";";
-                            myfiles<<"Nombre:"<<carros.at(n).get_nombre()<<";";
-                            myfiles<<"Año:"<<carros.at(n).get_ano()<<";";
-                            myfiles<<"ID:"<<carros.at(n).get_id()<<";";
-                            if(carros.at(n).get_fuel_economy_size()!=0)
-                            {
-                                myfiles<<"Fuel Economy:";
-                                for(int unsigned i = 0; i < carros.at(n).get_fuel_economy_size() - 1; i++)
-                                {
-                                    myfiles<<carros.at(n).getany_fuel_economy(i)<<",";
-                                }
-                                myfiles<<carros.at(n).getcurrent_fuel_economy()<<";";
-                            }
-                            
-                        }
-                    myfiles.close();
+                        saveCars(carros,nom_archivo);
                     }
                         
                 }
@@ -118,8 +93,28 @@ void printMenu()
     cout<<MENU<<endl;
 }
 
-bool saveCars()
+int saveCars(vector<Car> cars, string filename)
 {
-    
-    return true;
+    fstream myfiles;
+    myfiles.open(filename.c_str(), fstream::out);
+    for(int unsigned n=0; n<cars.size(); n++)
+    {
+        myfiles<<cars.at(n).get_id();
+        myfiles<<"{";
+        myfiles<<"Nombre:"<<cars.at(n).get_nombre()<<";";
+        myfiles<<"Año:"<<cars.at(n).get_ano()<<";";
+        myfiles<<"ID:"<<cars.at(n).get_id()<<";";
+        if(cars.at(n).get_fuel_economy_size()!=0)
+        {
+            myfiles<<"Fuel Economy:";
+            for(int unsigned i = 0; i < cars.at(n).get_fuel_economy_size() - 1; i++)
+            {
+                myfiles<<cars.at(n).getany_fuel_economy(i)<<",";
+            }
+            myfiles<<cars.at(n).getcurrent_fuel_economy()<<";";
+        }
+        myfiles<<"}";
+    }
+    myfiles.close();
+    return 0;
 }
