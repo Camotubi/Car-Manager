@@ -6,7 +6,7 @@
 #include "Car.h"
 #include <string>
 #define MENUPRINCIPAL "a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla\ng) Seleccionar Vehiculo\nz) Cerrar Programa"
-#define MENUVEHICULO "z) Regresar al Menu Principal"
+#define MENUVEHICULO "b) Mostrar informacion del Vehiculo \nd) Mostrar Fuel Economy Actual \ne) Calcular Fuel Economy \nf) Mostrar Historial de Fuel Economy del Vehiculo \nx) Limpiar Pantalla \nz) Regresar al Menu Principal"
 using namespace std;
 char menu_op;
 char yes_no;
@@ -185,11 +185,11 @@ int saveCars(vector<Car> cars, string filename)
         if(cars.at(n).get_fuel_economy_size()!=0)
         {
             myfiles<<"Fuel Economy:";
-            for(int unsigned i = 0; i < cars.at(n).get_fuel_economy_size() - 1; i++)
+            for(int unsigned i = 0; i < cars.at(n).get_fuel_economy_size(); i++)
             {
                 myfiles<<cars.at(n).getany_fuel_economy(i)<<",";
             }
-            myfiles<<cars.at(n).getcurrent_fuel_economy()<<";";
+            myfiles<<";";
         }
         myfiles<<"--#SPACE#--\n";
     }
