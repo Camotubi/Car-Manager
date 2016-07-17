@@ -15,6 +15,10 @@
 	}
 	float Car::getcurrent_fuel_economy()
 	{
+        if(fuel_economy.size()==0)
+        {
+            return -1;
+        }
 		return Car::fuel_economy.back();
 	}
     float Car::getany_fuel_economy(int n)
