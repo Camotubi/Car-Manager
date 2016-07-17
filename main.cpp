@@ -99,7 +99,7 @@ int main () {
                                         break;
                                     case 'c':
                                         loop = 0;
-                                        break;
+                                        break;//
                                 }
                             }
 
