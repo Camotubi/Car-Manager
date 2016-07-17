@@ -7,16 +7,16 @@ using namespace std;
 class Car
 {
 	
-	private:
+private:
 	string nombre;
-	int ano,id;
+	int ano;
 	vector<float> fuel_economy;
 public:
-	Car(string nombre, int ano, int id)
+	Car(string nombre, int ano)
 	{
-		this->nombre = nombre;
-		this->ano = ano;
-        this->id = id;
+        set_name(nombre);
+        set_year(ano);
+        set_fuel_economy(fuel_economy);
 	}
 	string get_nombre()
 	{
@@ -38,15 +38,28 @@ public:
     {
         return fuel_economy.size();
     }
-    int get_id()
-    {
-        return id;
-    }
-	float calculate_fuel_economy(float fuel_final, float fuel_inicial,float distance)
+	float calculate_fuel_economy(float fuel_used, float kiloF,float kiloI)
 	{
-		return (fuel_final-fuel_inicial)/distance;
+        float fuel_econ = (fuel_used/(kiloF-kiloI));
+        fuel_economy.push_back(fuel_econ);
+		return fuel_econ;
 	}
-
+    void add_fuel_economy(float fuel_economy)
+    {
+        this->fuel_economy.push_back(fuel_economy);
+    }
+    void set_name(string name)
+    {
+        this->nombre = name;
+    }
+    void set_year(int year)
+    {
+        this->ano = year;
+    }
+    void set_fuel_economy(vector<float> fuel_economy)
+    {
+        this->fuel_economy=fuel_economy;
+    }
 
 };
 #endif // __CAR_H_INCLUDED

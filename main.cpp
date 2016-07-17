@@ -5,41 +5,43 @@
 #include <cstdlib>
 #include "Car.h"
 #include <string>
-#define MENU "a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla\ng) Cerrar Programa"
-
+#define MENUPRINCIPAL "a) Crear Nuevo Auto \nb) Mostrar Autos en Memoria\nc) Guardar Vehiculos en Memoria\nd) Cargar Autos a memoria\nf) Limpiar Pantalla\ng) Seleccionar Vehiculo\nz) Cerrar Programa"
+#define MENUVEHICULO "z) Regresar al Menu Principal"
 using namespace std;
+char menu_op;
+char yes_no;
+
 int main () {
 	vector<Car> carros; 
 	string carro_nombre;
     fstream myfiles;
 	int carro_ano;
     int carro_id;
-	char menu_op;
-    char yes_no;
     int saveCars(vector<Car>,string);
     void loadCars(vector <Car>*, string);
     bool filexist(string);
-	void printMenu();
+	void printMenu(string);
+    void showCarsInMemory(vector<Car>);
+    void showCarInfo(Car);
+    void menuVehicles(Car);
     string nom_archivo;
 	while(true)
 	{
-		printMenu();
+		printMenu(MENUPRINCIPAL);
 		cin>>menu_op;
 		switch(menu_op)
 		{
 			case 'a':
-				cout<<"Ingrese nombre del Vehiculo"<<endl;
-				cin>>carro_nombre;
-				cout<<"Ingrese año del Vehiculo"<<endl;
-				cin>>carro_ano;
-				carros.push_back(Car(carro_nombre,carro_ano,carro_id));
+                {   cout<<"Ingrese nombre del Vehiculo"<<endl;
+                    cin>>carro_nombre;
+                    cout<<"Ingrese año del Vehiculo"<<endl;
+                    cin>>carro_ano;
+                    carros.push_back(Car(carro_nombre,carro_ano));
+                }
 			break;
 			
 			case 'b':
-				for(int unsigned i =0; i<carros.size();i++)
-				{
-					cout<<carros.at(i).get_nombre()<<carros.at(i).get_ano()<<carros.at(i).get_id()<<endl;
-				}
+                    showCarsInMemory(carros);
 			break;
 			
 			case 'c':
@@ -113,31 +115,73 @@ int main () {
 			break;
 			
 			case 'f':
-				system("clear");
+				system("cls");
 			break;
             
             case 'g':
+            {
+                int unsigned selectedCar;
+                showCarsInMemory(carros);
+                cout<<"Ingrese el numero del carro que desea seleccionar:";
+                cin>>selectedCar;
+                menuVehicles(carros.at(selectedCar));
+            }
+            break;
+            case 'h':
+            {
+
+                
+            }
+            break;
+            case 'z':
                 return 0;
+            break;
 		}
 		
 	}
 }
 
 
-void printMenu()
+void printMenu(string menu)
 {
-    cout<<MENU<<endl;
+    cout<<menu<<endl;
 }
 
+void showCarsInMemory(vector<Car> cars)
+{
+    if(cars.size()>0)
+    {
+        for(int unsigned i =0; i<cars.size();i++)
+        {
+            cout<<i<<". "<<cars.at(i).get_nombre()<<cars.at(i).get_ano()<<endl;
+        }
+    } else
+    {
+        cout<<"No hay vehiculos en memoria"<<endl;
+    }
+                
+}
+void showCarInfo(Car car)
+{
+    cout<<"Nombre: "<<car.get_nombre()<<endl;
+    cout<<"Año: "<<car.get_ano()<<endl;
+    cout<<"Fuel Economy: ";
+    if(car.get_fuel_economy_size()>0)
+    {
+        cout<<car.getcurrent_fuel_economy()<<endl;
+    } else
+    {
+        cout<< "Not Set"<<endl;
+    }
+}
 int saveCars(vector<Car> cars, string filename)
 {
     fstream myfiles;
     myfiles.open(filename.c_str(), fstream::out);
     for(int unsigned n=0; n<cars.size(); n++)
     {
-        myfiles<<"ID:"<<cars.at(n).get_id()<<endl;
         myfiles<<"Nombre:"<<cars.at(n).get_nombre()<<endl;
-        myfiles<<"Año:"<<cars.at(n).get_ano()<<endl;
+        myfiles<<"Ano:"<<cars.at(n).get_ano()<<endl;
         if(cars.at(n).get_fuel_economy_size()!=0)
         {
             myfiles<<"Fuel Economy:";
@@ -155,20 +199,17 @@ int saveCars(vector<Car> cars, string filename)
 
 void loadCars(vector<Car> *cars, string filename)
 {
-    int current_car_id = 0;
     int current_car_year = 0;
-    string current_line;
     fstream myfiles;
     string current_car_name;
+    string current_line;
+    string fuel_econo_buffer;
+    vector<float> current_car_fuel_economy;
     myfiles.open(filename.c_str(),fstream::in);
     while(getline(myfiles,current_line))
     {
+       
         cout<<current_line<<endl;
-        if(current_line.substr(0,3) == "ID:")
-        {
-            current_car_id=atoi(current_line.substr(3).c_str());
-            cout<<current_car_id<<endl;
-        }
         if(current_line.substr(0,7) == "Nombre:")
         {
             current_car_name=current_line.substr(7);
@@ -179,12 +220,33 @@ void loadCars(vector<Car> *cars, string filename)
             current_car_year= atoi(current_line.substr(4).c_str());
             cout<<current_car_year<<endl;
         }
+        if(current_line.substr(0,13)=="Fuel Economy:")
+        {
+            for(int i = 13,b=13,e=0;i<current_line.size();i++)
+            {
+                if(current_line.at(i)==' ')
+                {
+                    i++;
+                    b=i;
+                }
+                e++;
+                if(current_line.at(i)==',' || current_line.at(i) == ';')
+                {
+                    e--;
+                    cout<<current_line.substr(b,e)<<endl;
+                    cout<<atof(current_line.substr(b,e).c_str())<<endl;
+                    current_car_fuel_economy.push_back(atof(current_line.substr(b,e).c_str()));
+                    e=0;
+                    b=i+1;
+                }
+            }
+
+        }
         if(current_line=="--#SPACE#--")
         {
-            cout<<"hola"<<endl;
-            cars->push_back(Car(current_car_name,current_car_year,current_car_id));
-            current_car_id = 0;
-            current_car_year = 0;
+            cars->push_back(Car(current_car_name,current_car_year));
+            current_car_year = 0;//test
+            cars->at(0).set_fuel_economy(current_car_fuel_economy);
         }
 
     }
@@ -197,3 +259,51 @@ bool filexist(string filename)
     
     return (bool)file;
 }    
+void menuVehicles(Car car)
+{
+    void showCarInfo(Car);
+    void printMenu(string);
+    showCarInfo(car);
+    while(true)
+    {
+        printMenu(MENUVEHICULO);
+        cin>>menu_op;
+        switch(menu_op)
+        {
+            case 'a':
+            break;
+            case 'b':
+                showCarInfo(car);
+            break;
+            case 'c':
+            break;
+            case 'd':
+                cout<<car.getcurrent_fuel_economy()<<" litros/km"<<endl;
+            break;
+            case 'e':
+            {
+                int kiloI, kiloF,liters;
+                cout<<"Ingrese kilometraje inicial"<<endl;
+                cin>>kiloI;
+                cout<<"Ingrese Kilometraje actual"<<endl;
+                cin>>kiloF;
+                cout<<"Ingrese Litros gastados"<<endl;
+                cin>>liters;
+                cout<<car.calculate_fuel_economy(liters,kiloF,kiloI)<<" litros/km"<<endl;
+            }
+            break;
+            case 'f':
+                for(int unsigned i=0; i<car.get_fuel_economy_size();i++)
+                {
+                    cout<<car.getany_fuel_economy(i)<< "liters/km"<<endl;
+                }
+            break;
+            case 'x':
+                system("cls");
+                break;
+            case 'z':
+                return;
+            break;
+        }
+    }
+}
